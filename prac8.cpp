@@ -1,3 +1,5 @@
+// Write a program to search a pattern in a given text using the KMP algorithm
+
 #include<bits/stdc++.h>
 using namespace std;
 

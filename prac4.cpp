@@ -1,3 +1,6 @@
+// Write a program to implement the Bellman-Ford algorithm to find the shortest paths
+// from a given source node to all other nodes in a graph.
+
 #include<bits/stdc++.h>
 using namespace std;
 
