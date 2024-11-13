@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-int comparision=0;
+int comparision = 0;
 int partition(vector<int>& arr, int left, int right) {
     int pivot = left + rand() % (right - left + 1); // Random pivot index
     swap(arr[pivot], arr[right]); // Swap the chosen pivot with the last element

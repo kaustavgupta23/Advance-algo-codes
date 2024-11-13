@@ -1,3 +1,5 @@
+// 11.Write a program to implement Ford Fulkerson algorithm for the max flow problem
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -5,6 +7,10 @@
 #include <cstring> // For memset
 
 using namespace std;
+
+// The bfs function searches for an augmenting path from the source to the sink in the residual graph.
+// It uses a queue to explore all nodes level by level and keeps track of the parent of each node in the parent array.
+// If a path to the sink is found, it returns true; otherwise, it returns false.
 
 // Function to perform BFS and find an augmenting path
 bool bfs(vector<vector<int>>& residualGraph, int source, int sink, vector<int>& parent) {

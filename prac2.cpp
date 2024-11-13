@@ -20,11 +20,11 @@ int partition(vector<int>&arr, int left, int right){
 }
 
 int randQS(vector<int>&arr, int left, int right, int i){
-    if(left==right){
+    if(left==right){ // when array has only 1 element
         return arr[left];
     }
     int pivot_ind=partition(arr, left, right);
-    int len=pivot_ind-left+1;
+    int len=pivot_ind-left+1; 
     
     if(i==len){
         return arr[pivot_ind];

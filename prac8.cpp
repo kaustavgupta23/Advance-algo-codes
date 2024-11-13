@@ -3,28 +3,33 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+// lps => longest prefix suffix
 void lps(string &pattern, vector<int>&lpsarr){
-    int len=0;
-    lpsarr[0]=0;
-    int i=1; 
+    int len=0; // Length of the previous longest prefix suffix
+    lpsarr[0]=0; // The first character has no proper prefix or suffix
+    int i=1; // Start from the second character of the pattern
 
+    // Compute the LPS array
     while(i<pattern.size()){
         if(pattern[i]==pattern[len]){
-            len++;
-            lpsarr[i]=len;
+            len++; // The current characters match, increase the length of the prefix-suffix
+            // KEEPS TRACK THE LENGTH OF LPS
+            lpsarr[i]=len; // Store the length of the longest prefix-suffix at position i
             i++;
         }
         else{
+            // Mismatch: shift the pattern using the LPS array
             if(len!=0){
-                len=lpsarr[len-1];
+                len=lpsarr[len-1]; // Shift the length to the previous longest prefix-suffix
             }
             else{
-                lpsarr[i]=0;
+                lpsarr[i]=0; // No match found, so set the LPS value to 0
                 i++;
             }
         }
     }
 }
+
 
 void kmpsearch(string& str, string& pattern){
     bool found=false;

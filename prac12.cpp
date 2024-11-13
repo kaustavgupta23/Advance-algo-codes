@@ -16,7 +16,7 @@ public:
 
     // PATH COMPRESSION
     int findUPar(int node) { // find ultimate parent 
-        if (node == parent[node]) 
+        if (node == parent[node])  // if node is the parent of itself
             return node;
         return parent[node] = findUPar(parent[node]);
     }
