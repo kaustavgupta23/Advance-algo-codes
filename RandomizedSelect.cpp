@@ -30,7 +30,7 @@ int randQS(vector<int>&arr, int left, int right, int i){
         return arr[pivot_ind];
     }
     else if(i<len){
-        return randQS(arr,left,pivot_ind-1,i);
+        return randQS(arr,left,pivot_ind-1, i);
     }
     else{
         return randQS(arr,pivot_ind+1, right, i-len);
@@ -40,7 +40,7 @@ int randQS(vector<int>&arr, int left, int right, int i){
 int main(){
     vector<int>arr(100);
     int n;
-    cout<<"enter array size:";
+    cout<<"enter array size: ";
     cin>>n;
 
     cout<<endl<<"enter elements:";
