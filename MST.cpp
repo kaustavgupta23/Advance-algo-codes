@@ -1,9 +1,7 @@
-// Write a program to determine the minimum spanning tree of a graph using Kruskal’s algorithm.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-
+// Disjoint Set for Union-Find operations
 class DisjointSet {
     vector<int> rank, parent, size;
 public:
@@ -17,103 +15,104 @@ public:
         }
     }
 
-    int findUPar(int node) {
+    int findParent(int node) {
         if (node == parent[node])
             return node;
-        return parent[node] = findUPar(parent[node]);
+        return parent[node] = findParent(parent[node]);
     }
 
     void unionByRank(int u, int v) {
-        int ulp_u = findUPar(u);
-        int ulp_v = findUPar(v);
-        if (ulp_u == ulp_v) return;
-        if (rank[ulp_u] < rank[ulp_v]) {
-            parent[ulp_u] = ulp_v;
+        int ultimate_u = findParent(u);
+        int ultimate_v = findParent(v);
+        if (ultimate_u == ultimate_v) return;
+
+        if (rank[ultimate_u] < rank[ultimate_v]) {
+            parent[ultimate_u] = ultimate_v;
         }
-        else if (rank[ulp_v] < rank[ulp_u]) {
-            parent[ulp_v] = ulp_u;
+        else if (rank[ultimate_v] < rank[ultimate_u]) {
+            parent[ultimate_v] = ultimate_u;
         }
         else {
-            parent[ulp_v] = ulp_u;
-            rank[ulp_u]++;
+            parent[ultimate_v] = ultimate_u;
+            rank[ultimate_u]++;
         }
     }
 
     void unionBySize(int u, int v) {
-        int ulp_u = findUPar(u);
-        int ulp_v = findUPar(v);
-        if (ulp_u == ulp_v) return;
-        if (size[ulp_u] < size[ulp_v]) {
-            parent[ulp_u] = ulp_v;
-            size[ulp_v] += size[ulp_u];
+        int ultimate_u = findParent(u);
+        int ultimate_v = findParent(v);
+        if (ultimate_u == ultimate_v) return;
+
+        if (size[ultimate_u] < size[ultimate_v]) {
+            parent[ultimate_u] = ultimate_v;
+            size[ultimate_v] += size[ultimate_u];
         }
         else {
-            parent[ulp_v] = ulp_u;
-            size[ulp_u] += size[ulp_v];
+            parent[ultimate_v] = ultimate_u;
+            size[ultimate_u] += size[ultimate_v];
         }
     }
 };
-class Solution
-{
+
+class Solution {
 public:
-    //Function to find sum of weights of edges of the Minimum Spanning Tree.
-    int spanningTree(int V, vector<vector<int>> adj[])
-    {
-        // 1 - 2 wt = 5
-        /// 1 - > (2, 5)
-        // 2 -> (1, 5)
-
-        // 5, 1, 2
-        // 5, 2, 1
-        // repetition is there but can be removed by disjoint sets
+    // Function to find the sum of weights of edges in the Minimum Spanning Tree
+    int findMST(int nodes, vector<vector<int>> graph[]) {
         vector<pair<int, pair<int, int>>> edges;
-        // O(N + E) => TC
-        for (int i = 0; i < V; i++) {
-            for (auto it : adj[i]) {
-                int adjNode = it[0];
-                int wt = it[1];
-                int node = i;
 
-                edges.push_back({wt, {node, adjNode}});
+        // Convert adjacency list to edge list
+        for (int i = 0; i < nodes; i++) {
+            for (auto it : graph[i]) {
+                int neighbor = it[0];
+                int weight = it[1];
+                int current = i;
+
+                edges.push_back({weight, {current, neighbor}});
             }
         }
-        DisjointSet ds(V);
-        // M log M => TC
-        sort(edges.begin(), edges.end());
-        int mstWt = 0;
-        for (auto it : edges) {
-            int wt = it.first;
-            int u = it.second.first;
-            int v = it.second.second;
 
-            if (ds.findUPar(u) != ds.findUPar(v)) { // they belong to different component
-                mstWt += wt; // add thier weight 
+        // Sort edges by weight
+        sort(edges.begin(), edges.end());
+
+        DisjointSet ds(nodes);
+        int mstWeight = 0;
+
+        // Kruskal's algorithm
+        for (auto edge : edges) {
+            int weight = edge.first;
+            int u = edge.second.first;
+            int v = edge.second.second;
+
+            // If nodes belong to different components, add edge to MST
+            if (ds.findParent(u) != ds.findParent(v)) {
+                mstWeight += weight;
                 ds.unionBySize(u, v);
             }
         }
 
-        return mstWt;
+        return mstWeight;
     }
 };
 
 int main() {
+    int nodes = 5;
+    vector<vector<int>> inputEdges = {{0, 1, 2}, {0, 2, 1}, {1, 2, 1}, {2, 3, 2}, {3, 4, 1}, {4, 2, 2}};
+    vector<vector<int>> graph[nodes];
 
-    int V = 5;
-    vector<vector<int>> edges = {{0, 1, 2}, {0, 2, 1}, {1, 2, 1}, {2, 3, 2}, {3, 4, 1}, {4, 2, 2}};
-    vector<vector<int>> adj[V];
-    for (auto it : edges) {
-        vector<int> tmp(2);
-        tmp[0] = it[1];
-        tmp[1] = it[2];
-        adj[it[0]].push_back(tmp);
+    for (auto edge : inputEdges) {
+        vector<int> temp(2);
+        temp[0] = edge[1];
+        temp[1] = edge[2];
+        graph[edge[0]].push_back(temp);
 
-        tmp[0] = it[0];
-        tmp[1] = it[2];
-        adj[it[1]].push_back(tmp);
+        temp[0] = edge[0];
+        temp[1] = edge[2];
+        graph[edge[1]].push_back(temp);
     }
 
     Solution obj;
-    int mstWt = obj.spanningTree(V, adj);
-    cout << "The sum of all the edge weights: " << mstWt << endl;
+    int mstWeight = obj.findMST(nodes, graph);
+    cout << "The total weight of the MST is: " << mstWeight << endl;
+
     return 0;
 }

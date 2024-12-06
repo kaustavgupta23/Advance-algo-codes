@@ -1,102 +1,106 @@
-// 11.Write a program to implement Ford Fulkerson algorithm for the max flow problem
-
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits> // For INT_MAX
-#include <cstring> // For memset
-
+#include <bits/stdc++.h>
 using namespace std;
 
-// The bfs function searches for an augmenting path from the source to the sink in the residual graph.
-// It uses a queue to explore all nodes level by level and keeps track of the parent of each node in the parent array.
-// If a path to the sink is found, it returns true; otherwise, it returns false.
+// Function for BFS to find if there is a path from source to sink
+bool bfs(vector<vector<int>>& residualgraph, int source, int sink, vector<int>& parent) {
+    int vert = residualgraph.size();  // Get the number of vertices
+    vector<bool> visited(vert, false);  // Track visited nodes
 
-// Function to perform BFS and find an augmenting path
-bool bfs(vector<vector<int>>& residualGraph, int source, int sink, vector<int>& parent) {
-    int numVertices = residualGraph.size();
-    vector<bool> visited(numVertices, false);
-    
-    // Create a queue for BFS
-    queue<int> q;
-    q.push(source);
-    visited[source] = true;
-    parent[source] = -1; // No parent for the source node
+    queue<int> q;  // Queue to perform BFS
 
-    // Standard BFS loop
+    q.push(source);  // Start BFS from the source
+    parent[source] = -1;  // No parent for source
+    visited[source] = true;  // Mark source as visited
+
+    // While queue is not empty, explore all nodes
     while (!q.empty()) {
-        int u = q.front();
+        int current = q.front();  // Get the front element
         q.pop();
 
-        for (int v = 0; v < numVertices; ++v) {
-            // Check if v is not visited and there's capacity left
-            if (!visited[v] && residualGraph[u][v] > 0) {
-                // If we find the sink node, we stop and return true
-                if (v == sink) {
-                    parent[v] = u;
+        // Explore neighbors of the current node
+        for (int next = 0; next < vert; next++) {
+            // Check if the node is not visited and there is available capacity on the edge
+            if (!visited[next] && residualgraph[current][next] > 0) {
+                if (next == sink) {  // If we reach the sink, stop the search
+                    parent[next] = current;
                     return true;
                 }
-                q.push(v);
-                parent[v] = u;
-                visited[v] = true;
+                q.push(next);  // Add the node to the queue for further exploration
+                parent[next] = current;  // Set the parent of the node
+                visited[next] = true;  // Mark the node as visited
             }
         }
     }
-    // No path found
-    return false;
+    return false;  // No augmenting path found
 }
 
 // Ford-Fulkerson algorithm to find the maximum flow
-int fordFulkerson(vector<vector<int>>& graph, int source, int sink) {
-    int numVertices = graph.size();
-    // Create a residual graph and initialize it with the given capacities
-    vector<vector<int>> residualGraph = graph;
-    
-    // This array is used to store the path found by BFS
-    vector<int> parent(numVertices);
+int fordfulkerson(vector<vector<int>> graph, int src, int sink) {
+    int vert = graph.size();  // Get the number of vertices
+    vector<vector<int>> residualgraph = graph;  // Create a residual graph (initially same as original)
+    vector<int> parent(vert, -1);  // To store the path
 
-    int maxFlow = 0; // Initialize maximum flow
+    int maxflow = 0;  // Initialize max flow to 0
 
-    // Augment the flow while there is an augmenting path
-    while (bfs(residualGraph, source, sink, parent)) {
-        // Find the minimum capacity (bottleneck) along the path found by BFS
-        int pathFlow = INT_MAX;
-        for (int v = sink; v != source; v = parent[v]) {
+    // While there is an augmenting path in the residual graph
+    while (bfs(residualgraph, src, sink, parent)) {
+        int path = INT_MAX;  // Initialize path flow as infinity
+
+        // Find the minimum residual capacity of the path from source to sink
+        for (int v = sink; v != src; v = parent[v]) {
             int u = parent[v];
-            pathFlow = min(pathFlow, residualGraph[u][v]);
+            path = min(path, residualgraph[u][v]);  // Get the minimum flow along the path
         }
 
-        // Update the residual capacities and reverse flows along the path
-        for (int v = sink; v != source; v = parent[v]) {
+        // Update residual graph by reducing the capacity along the path and adding reverse flow
+        for (int v = sink; v != src; v = parent[v]) {
             int u = parent[v];
-            residualGraph[u][v] -= pathFlow; // Reduce capacity
-            residualGraph[v][u] += pathFlow; // Increase reverse flow
+            residualgraph[u][v] -= path;  // Reduce the forward edge capacity
+            residualgraph[v][u] += path;  // Add the reverse edge capacity (for possible future flow)
         }
 
-        // Add path flow to the overall flow
-        maxFlow += pathFlow;
+        maxflow += path;  // Add the flow in this iteration to maxflow
     }
 
-    // Return the total flow from source to sink
-    return maxFlow;
+    return maxflow;  // Return the total maximum flow
 }
 
 int main() {
-    // Sample graph represented as an adjacency matrix
-    // 6 vertices: 0 is the source, 5 is the sink
-    vector<vector<int>> graph = {
-        {0, 16, 13, 0, 0, 0}, // Edges from vertex 0
-        {0, 0, 10, 12, 0, 0}, // Edges from vertex 1
-        {0, 4, 0, 0, 14, 0},  // Edges from vertex 2
-        {0, 0, 9, 0, 0, 20},  // Edges from vertex 3
-        {0, 0, 0, 7, 0, 4},   // Edges from vertex 4
-        {0, 0, 0, 0, 0, 0}    // Edges from vertex 5 (sink)
-    };
+    int vert;  // Number of vertices
+    cout << "Enter number of vertices:";
+    cin >> vert;
 
-    int source = 0;
-    int sink = 5;
+    // Initialize a graph represented as an adjacency matrix
+    vector<vector<int>> graph(vert, vector<int>(vert, 0));
 
-    cout << "The maximum possible flow is: " << fordFulkerson(graph, source, sink) << endl;
+    // Input the graph as an adjacency matrix with edge capacities
+    cout << "Enter adjacency matrix (edge capacity row by row):" << endl;
+    for (int i = 0; i < vert; i++) {
+        for (int j = 0; j < vert; j++) {
+            cin >> graph[i][j];
+        }
+    }
 
-    return 0;
+    int src, sink;
+    cout << "Enter source vertex:";
+    cin >> src;
+    cout << "Enter sink vertex:";
+    cin >> sink;
+
+    // Call the Ford-Fulkerson function to find the maximum flow
+    int maxflow = fordfulkerson(graph, src, sink);
+
+    // Output the result
+    cout << "Maximum flow:" << endl << maxflow << endl;
 }
+
+
+// output
+// Enter number of vertices: 4
+// Enter adjacent matrix(edge capacity row by row):
+// 0 10 5 0
+// 0 0 15 10
+// 0 0 0 10
+// 0 0 0 0
+// Enter source vertex: 0
+// Enter sink vertex: 3

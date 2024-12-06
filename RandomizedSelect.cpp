@@ -6,7 +6,6 @@ using namespace std;
 int partition(vector<int>&arr, int left, int right){
     int pivot = left + rand() % (right - left + 1);
     swap(arr[pivot], arr[right]);
-
     pivot=arr[right];
     int i=left;
     for(int j=left; j<right; j++){
@@ -27,7 +26,7 @@ int randQS(vector<int>&arr, int left, int right, int i){
     int len=pivot_ind-left+1; 
     
     if(i==len){
-        return arr[pivot_ind];
+        return arr[pivot_ind]; // single element
     }
     else if(i<len){
         return randQS(arr,left,pivot_ind-1, i);
@@ -37,20 +36,31 @@ int randQS(vector<int>&arr, int left, int right, int i){
     }
 }
 
-int main(){
-    vector<int>arr(100);
-    int n;
-    cout<<"enter array size: ";
-    cin>>n;
 
-    cout<<endl<<"enter elements:";
-    for(int i=0; i<n; i++){
-        cin>>arr[i];
+int main() {
+    vector<int> arr(100);
+    int n;
+    cout << "Enter array size: ";
+    cin >> n;
+
+    cout << "Enter elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
     }
 
-    cout<<endl<<"enter value of i:";
+    // Find the ith smallest element
+    cout << "Enter value of i for ith smallest element: ";
     int i;
-    cin>>i;
+    cin >> i;
+    int ithSmallest = randQS(arr, 0, n - 1, i);
+    cout << "The " << i << "th smallest element is: " << ithSmallest << endl;
 
-    cout<<"ith smallest element:"<<randQS(arr,0,n-1,i);   
+    //Find the kth largest element
+    cout << "Enter value of k for kth largest element: ";
+    int k;
+    cin >> k;
+    int kthLargest = randQS(arr, 0, n - 1, n - k + 1);
+    cout << "The " << k << "th largest element is: " << kthLargest << endl;
+
+    return 0;
 }

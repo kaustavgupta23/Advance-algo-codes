@@ -6,11 +6,9 @@ using namespace std;
 int comparision = 0;
 int partition(vector<int>& arr, int left, int right) {
     int pivot = left + rand() % (right - left + 1); // Random pivot index
-    swap(arr[pivot], arr[right]); // Swap the chosen pivot with the last element
-
+    swap(arr[pivot], arr[right]); // Swap the chosen pivot with the last element on the right
     pivot = arr[right]; // Pivot value is now at the end
     int i = left; // Index to place elements less than or equal to the pivot
-
     for (int j = left; j < right; j++) { // Iterate over the subarray
         comparision++; // Increment the comparison count
         if (arr[j] <= pivot) { // Compare current element with pivot
